@@ -13,10 +13,10 @@ class Program
     public static async Task Main()
     {
         var tracerProvider = Sdk.CreateTracerProviderBuilder()
-.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(EndpointName))
-.AddSource("NServiceBus.*")
-.AddOtlpExporter()
-.Build();
+        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(EndpointName))
+        .AddSource("*") //Also tested "NServiceBus.*", "NServiceBus.Core"
+        .AddOtlpExporter()
+        .Build();
 
         var endpointConfiguration = new EndpointConfiguration(Console.Title = EndpointName);
         endpointConfiguration.EnableCallbacks(makesRequests: false);

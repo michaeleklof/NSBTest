@@ -16,10 +16,10 @@ class Program
         var builder = WebApplication.CreateBuilder();
 
         var tracerProvider = Sdk.CreateTracerProviderBuilder()
-.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(EndpointName))
-.AddSource("NServiceBus.*")
-.AddOtlpExporter()
-.Build();
+        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(EndpointName))
+        .AddSource("*") //Also tested "NServiceBus.*", "NServiceBus.Core"
+        .AddOtlpExporter()
+        .Build();
 
         builder.Host.UseNServiceBus(context =>
         {
@@ -39,5 +39,6 @@ class Program
         app.MapRazorPages();
 
         app.Run();
+
     }
 }
