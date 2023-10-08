@@ -14,7 +14,7 @@ class Program
     {
         var tracerProvider = Sdk.CreateTracerProviderBuilder()
         .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(EndpointName))
-        .AddSource("*") //Also tested "NServiceBus.*", "NServiceBus.Core"
+        .AddSource("NServiceBus.*") //Tested "NServiceBus.*", "NServiceBus.Core", "*"
         .AddOtlpExporter()
         .Build();
 
