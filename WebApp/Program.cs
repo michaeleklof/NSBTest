@@ -4,22 +4,27 @@ using NServiceBus;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Extensions.Hosting;
+using NServiceBus.Transport.RabbitMQ;
 
 class Program
 {
 
-    const string EndpointName = "Samples.AsyncPages.WebApplication";
+    const string EndpointName = "NSBTest.Endpoint.WebApp";
     public static void Main()
     {
         #region ApplicationStart
         var builder = WebApplication.CreateBuilder();
 
         var tracerProvider = Sdk.CreateTracerProviderBuilder()
-        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(EndpointName))
-        .AddSource("NServiceBus.*") //Tested "NServiceBus.*", "NServiceBus.Core", "*"
+        //.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(EndpointName))
+        .SetResourceBuilder(ResourceBuilder.CreateDefault())
+        .AddSource("NServiceBus.Core") //Tested "NServiceBus.*", "NServiceBus.Core", "*"
         .AddOtlpExporter()
         .Build();
+
+        //Sdk.SetDefaultTextMapPropagator(new BaggagePropagator());
 
         builder.Host.UseNServiceBus(context =>
         {
@@ -27,7 +32,11 @@ class Program
             endpointConfiguration.MakeInstanceUniquelyAddressable("1");
             endpointConfiguration.EnableCallbacks();
             endpointConfiguration.UseTransport(new LearningTransport());
+            //var transport = endpointConfiguration.UseTransport<RabbitMQTransport>();
+            //transport.UseConventionalRoutingTopology(QueueType.Quorum);
+            //transport.ConnectionString("host=10.20.10.30;username=guest;password=guest");
             endpointConfiguration.EnableOpenTelemetry();
+            endpointConfiguration.EnableInstallers();
             return endpointConfiguration;
         });
         #endregion
